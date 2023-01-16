@@ -6,11 +6,12 @@ print("Initializing...")
 tickers = []
 missed_isins = []
 base_url = 'https://de.wikipedia.org'
+parser = 'html.parser'
 
 # Get the DAX companies from Wikipedia
 res = requests.get('https://de.wikipedia.org/wiki/DAX')
 print("Webpage OK")
-soup = bs4.BeautifulSoup(res.text, 'html.parser')
+soup = bs4.BeautifulSoup(res.text, parser)
 print("HTML dump OK")
 table = soup.find('table', {'class': 'wikitable sortable'})
 if table is not None:
@@ -22,7 +23,7 @@ if table is not None:
 
         # Get the ISIN from the company's Wikipedia page
         company_res = requests.get(link)
-        company_soup = bs4.BeautifulSoup(company_res.text, 'html.parser')
+        company_soup = bs4.BeautifulSoup(company_res.text, parser)
         isin_cell = company_soup.find('a', string='ISIN').find_parent('td')
         if isin_cell:
             isin = isin_cell.find_next_sibling('td').text.strip()
@@ -30,7 +31,7 @@ if table is not None:
                 isin = isin[:12]
             # Use the ISIN to get the ticker from eulerpool
             ticker_res = requests.get(f'https://www.eulerpool.com/aktie/{isin}')
-            ticker_soup = bs4.BeautifulSoup(ticker_res.text, 'html.parser')
+            ticker_soup = bs4.BeautifulSoup(ticker_res.text, parser)
             ticker_box = ticker_soup.find('div', {
                 'class': 'text-sm mr-3 inline-flex items-center w-fit justify-self-end cursor-pointer rounded-lg '
                          '-ml-2 px-2 py-1 bg-transparent hover:shadow'})
@@ -61,4 +62,4 @@ if tickers is not None:
             print(f"Missed {isin}")
             g.write(isin + '\n')
 else:
-    None
+    print("Ticker list empty")
