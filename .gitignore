@@ -1,0 +1,11 @@
+# Ignore ALL .txt files except requirements
+*.txt
+!requirements.txt
+
+# Distribution/packaging
+lib/
+scripts/
+include/
+
+# IDE specifics
+.idea/
